@@ -17,6 +17,11 @@
             padding: 10px 20px;
             text-align: center;
         }
+        .date-container {
+            margin: 10px 0;
+            font-size: 18px;
+            text-align: center;
+        }
         .container {
             max-width: 800px;
             margin: 20px auto;
@@ -60,7 +65,7 @@
         .category ul li button:hover {
             background: #c9302c;
         }
-        .add-item {
+        .add-item, .remove-all {
             display: flex;
             margin-top: 10px;
         }
@@ -70,7 +75,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        .add-item button {
+        .add-item button, .remove-all button {
             margin-left: 10px;
             background: #0078D7;
             color: white;
@@ -79,7 +84,7 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        .add-item button:hover {
+        .add-item button:hover, .remove-all button:hover {
             background: #005bb5;
         }
     </style>
@@ -87,7 +92,10 @@
 <body>
     <header>
         <h1>Shopping List Organizer</h1>
-        <div class="date" id="currentDate"></div>
+        <div class="date-container">
+            <label for="calendar">Select Date:</label>
+            <input type="date" id="calendar">
+        </div>
     </header>
     <div class="container">
         <div class="category" id="grocery">
@@ -126,6 +134,7 @@
     </div>
 
     <script>
+        // Add item to the list
         function addItem(category) {
             const input = document.getElementById(`${category}Input`);
             const list = document.getElementById(`${category}List`);
@@ -145,9 +154,18 @@
             input.value = ""; // Clear the input field
         }
 
+        // Remove a specific item from the list
         function removeItem(button) {
             const li = button.parentElement;
             li.remove();
+        }
+
+        // Remove all items from the list of a category
+        function removeAll(category) {
+            const list = document.getElementById(`${category}List`);
+            while (list.firstChild) {
+                list.removeChild(list.firstChild);
+            }
         }
     </script>
 </body>
