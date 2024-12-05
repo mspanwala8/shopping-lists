@@ -132,7 +132,7 @@
         </div>
         <div class="buttons-container">
             <button onclick="downloadAsPDF()">Download as PDF</button>
-            <button onclick="shareList()">Share List</button>
+            <button onclick="shareList()">Share via WhatsApp</button>
         </div>
     </div>
 
@@ -180,8 +180,19 @@
             list.innerHTML = ""; // Clear all items
         }
 
+        // Check if at least one item exists in any category
+        function hasItems() {
+            const categories = ["grocery", "household", "personal"];
+            return categories.some(category => document.getElementById(`${category}List`).children.length > 0);
+        }
+
         // Download the list as a PDF
         function downloadAsPDF() {
+            if (!hasItems()) {
+                alert("Please add at least one item to any category.");
+                return;
+            }
+
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -192,22 +203,36 @@
             doc.setFontSize(12);
             doc.text(`Date: ${selectedDate}`, 10, 20);
 
-            ["grocery", "household", "personal"].forEach((category, index) => {
+            // Function to add list content to PDF
+            function addCategoryToPDF(category, yPosition) {
                 const list = document.getElementById(`${category}List`);
                 const title = category.charAt(0).toUpperCase() + category.slice(1);
                 doc.setFontSize(14);
-                doc.text(`${title}:`, 10, 30 + index * 40);
+                doc.text(`${title}:`, 10, yPosition);
+                yPosition += 10; // Move the next items down
 
                 Array.from(list.children).forEach((li, i) => {
-                    doc.text(`- ${li.innerText.replace("Remove", "").trim()}`, 20, 40 + index * 40 + i * 10);
+                    doc.text(`- ${li.innerText.replace("Remove", "").trim()}`, 20, yPosition + i * 10);
                 });
-            });
+
+                return yPosition + list.children.length * 10 + 10; // Return updated Y position
+            }
+
+            let yPosition = 30; // Start Y position for PDF content
+            yPosition = addCategoryToPDF("grocery", yPosition);
+            yPosition = addCategoryToPDF("household", yPosition);
+            yPosition = addCategoryToPDF("personal", yPosition);
 
             doc.save("shopping-list.pdf");
         }
 
-        // Share the list via email, WhatsApp, or text
+        // Share the list via WhatsApp
         function shareList() {
+            if (!hasItems()) {
+                alert("Please add at least one item to any category.");
+                return;
+            }
+
             const categories = ["grocery", "household", "personal"];
             let listText = "Shopping List:\n";
             const selectedDate = document.getElementById("calendar").value || "No date selected";
@@ -225,13 +250,8 @@
 
             const shareText = encodeURIComponent(listText);
             const whatsappURL = `https://wa.me/?text=${shareText}`;
-            const mailtoURL = `mailto:?subject=Shopping List&body=${shareText}`;
 
-            if (confirm("Do you want to share via WhatsApp?")) {
-                window.open(whatsappURL, "_blank");
-            } else {
-                window.open(mailtoURL, "_self");
-            }
+            window.open(whatsappURL, "_blank");
         }
     </script>
 </body>
