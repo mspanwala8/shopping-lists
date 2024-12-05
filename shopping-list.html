@@ -186,6 +186,26 @@
             return categories.some(category => document.getElementById(`${category}List`).children.length > 0);
         }
 
+        // Add the last entered value to the list if the user forgot to press Enter
+        function getCategoryItems() {
+            const categories = ["grocery", "household", "personal"];
+            const allItems = {};
+
+            categories.forEach(category => {
+                const list = document.getElementById(`${category}List`);
+                const lastInput = document.getElementById(`${category}Input`);
+                const items = Array.from(list.children).map(li => li.innerText.replace("Remove", "").trim());
+                
+                if (lastInput && lastInput.value.trim() !== "") {
+                    items.push(lastInput.value.trim());
+                }
+                
+                allItems[category] = items;
+            });
+
+            return allItems;
+        }
+
         // Download the list as a PDF
         function downloadAsPDF() {
             if (!hasItems()) {
@@ -203,19 +223,21 @@
             doc.setFontSize(12);
             doc.text(`Date: ${selectedDate}`, 10, 20);
 
+            const allItems = getCategoryItems();
+
             // Function to add list content to PDF
             function addCategoryToPDF(category, yPosition) {
-                const list = document.getElementById(`${category}List`);
+                const items = allItems[category];
                 const title = category.charAt(0).toUpperCase() + category.slice(1);
                 doc.setFontSize(14);
                 doc.text(`${title}:`, 10, yPosition);
                 yPosition += 10; // Move the next items down
 
-                Array.from(list.children).forEach((li, i) => {
-                    doc.text(`- ${li.innerText.replace("Remove", "").trim()}`, 20, yPosition + i * 10);
+                items.forEach((item, i) => {
+                    doc.text(`- ${item}`, 20, yPosition + i * 10);
                 });
 
-                return yPosition + list.children.length * 10 + 10; // Return updated Y position
+                return yPosition + items.length * 10 + 10; // Return updated Y position
             }
 
             let yPosition = 30; // Start Y position for PDF content
@@ -233,25 +255,22 @@
                 return;
             }
 
-            const categories = ["grocery", "household", "personal"];
+            const allItems = getCategoryItems();
             let listText = "Shopping List:\n";
             const selectedDate = document.getElementById("calendar").value || "No date selected";
 
             listText += `Date: ${selectedDate}\n\n`;
 
-            categories.forEach((category) => {
-                const list = document.getElementById(`${category}List`);
+            Object.keys(allItems).forEach((category) => {
                 listText += `${category.charAt(0).toUpperCase() + category.slice(1)}:\n`;
-                Array.from(list.children).forEach((li) => {
-                    listText += `- ${li.innerText.replace("Remove", "").trim()}\n`;
+                allItems[category].forEach(item => {
+                    listText += `- ${item}\n`;
                 });
                 listText += "\n";
             });
 
-            const shareText = encodeURIComponent(listText);
-            const whatsappURL = `https://wa.me/?text=${shareText}`;
-
-            window.open(whatsappURL, "_blank");
+            const url = `https://wa.me/?text=${encodeURIComponent(listText)}`;
+            window.open(url, "_blank");
         }
     </script>
 </body>
