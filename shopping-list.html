@@ -107,7 +107,7 @@
             </h3>
             <ul id="groceryList"></ul>
             <div class="add-item">
-                <input type="text" id="groceryInput" placeholder="Add grocery items (separate by commas)">
+                <input type="text" id="groceryInput" placeholder="Add grocery items (one per line)">
             </div>
         </div>
         <div id="household">
@@ -117,7 +117,7 @@
             </h3>
             <ul id="householdList"></ul>
             <div class="add-item">
-                <input type="text" id="householdInput" placeholder="Add household items (separate by commas)">
+                <input type="text" id="householdInput" placeholder="Add household items (one per line)">
             </div>
         </div>
         <div id="personal">
@@ -127,7 +127,7 @@
             </h3>
             <ul id="personalList"></ul>
             <div class="add-item">
-                <input type="text" id="personalInput" placeholder="Add personal shopping items (separate by commas)">
+                <input type="text" id="personalInput" placeholder="Add personal shopping items (one per line)">
             </div>
         </div>
         <div class="buttons-container">
@@ -148,7 +148,7 @@
             }
         });
 
-        // Add items from the input field (separate by commas)
+        // Add items from the input field (allow for line breaks and multiple items)
         function addItemsFromInput(category) {
             const input = document.getElementById(`${category}Input`);
             const list = document.getElementById(`${category}List`);
@@ -158,9 +158,9 @@
                 return;
             }
 
-            // Split input by commas and add each item to the list
-            const items = input.value.split(",").map(item => item.trim()).filter(item => item !== "");
-            
+            // Split input by line breaks and add each item to the list
+            const items = input.value.split("\n").map(item => item.trim()).filter(item => item !== "");
+
             items.forEach(item => {
                 const li = document.createElement("li");
                 li.innerHTML = `
@@ -271,7 +271,8 @@
             }
 
             const allItems = getCategoryItems();
-            let listText = "Shopping List:\n";
+            let listText = `Shopping List\n\n`;
+
             const selectedDate = document.getElementById("calendar").value;
             listText += `Date: ${selectedDate}\n\n`;
 
