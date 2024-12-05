@@ -107,7 +107,7 @@
             </h3>
             <ul id="groceryList"></ul>
             <div class="add-item">
-                <input type="text" id="groceryInput" placeholder="Add grocery item">
+                <input type="text" id="groceryInput" placeholder="Add grocery items (separate by commas)">
             </div>
         </div>
         <div id="household">
@@ -117,7 +117,7 @@
             </h3>
             <ul id="householdList"></ul>
             <div class="add-item">
-                <input type="text" id="householdInput" placeholder="Add household item">
+                <input type="text" id="householdInput" placeholder="Add household items (separate by commas)">
             </div>
         </div>
         <div id="personal">
@@ -127,7 +127,7 @@
             </h3>
             <ul id="personalList"></ul>
             <div class="add-item">
-                <input type="text" id="personalInput" placeholder="Add personal shopping item">
+                <input type="text" id="personalInput" placeholder="Add personal shopping items (separate by commas)">
             </div>
         </div>
         <div class="buttons-container">
@@ -143,28 +143,33 @@
                 const focusedInput = document.activeElement;
                 if (focusedInput && focusedInput.tagName === "INPUT") {
                     const category = focusedInput.id.replace("Input", "");
-                    addItem(category);
+                    addItemsFromInput(category);
                 }
             }
         });
 
-        // Add item to the list
-        function addItem(category) {
+        // Add items from the input field (separate by commas)
+        function addItemsFromInput(category) {
             const input = document.getElementById(`${category}Input`);
             const list = document.getElementById(`${category}List`);
 
             if (input.value.trim() === "") {
-                alert("Please enter an item.");
+                alert("Please enter at least one item.");
                 return;
             }
 
-            const li = document.createElement("li");
-            li.innerHTML = `
-                ${input.value} 
-                <button onclick="removeItem(this)">Remove</button>
-            `;
+            // Split input by commas and add each item to the list
+            const items = input.value.split(",").map(item => item.trim()).filter(item => item !== "");
+            
+            items.forEach(item => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    ${item} 
+                    <button onclick="removeItem(this)">Remove</button>
+                `;
+                list.appendChild(li);
+            });
 
-            list.appendChild(li);
             input.value = ""; // Clear the input field
         }
 
@@ -186,24 +191,24 @@
             return categories.some(category => document.getElementById(`${category}List`).children.length > 0);
         }
 
-        // Add the last entered value to the list if the user forgot to press Enter
+        // Get all items from the categories (even if entered in one line)
         function getCategoryItems() {
             const categories = ["grocery", "household", "personal"];
             const allItems = {};
 
             categories.forEach(category => {
                 const list = document.getElementById(`${category}List`);
-                const lastInput = document.getElementById(`${category}Input`);
                 const items = Array.from(list.children).map(li => li.innerText.replace("Remove", "").trim());
-                
-                if (lastInput && lastInput.value.trim() !== "") {
-                    items.push(lastInput.value.trim());
-                }
-                
                 allItems[category] = items;
             });
 
             return allItems;
+        }
+
+        // Check if the date is selected
+        function isDateSelected() {
+            const date = document.getElementById("calendar").value;
+            return date !== "";
         }
 
         // Download the list as a PDF
@@ -213,10 +218,15 @@
                 return;
             }
 
+            if (!isDateSelected()) {
+                alert("Please select a date.");
+                return;
+            }
+
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            const selectedDate = document.getElementById("calendar").value || "No date selected";
+            const selectedDate = document.getElementById("calendar").value;
 
             doc.setFontSize(18);
             doc.text("Shopping List", 10, 10);
@@ -255,19 +265,23 @@
                 return;
             }
 
+            if (!isDateSelected()) {
+                alert("Please select a date.");
+                return;
+            }
+
             const allItems = getCategoryItems();
             let listText = "Shopping List:\n";
-            const selectedDate = document.getElementById("calendar").value || "No date selected";
-
+            const selectedDate = document.getElementById("calendar").value;
             listText += `Date: ${selectedDate}\n\n`;
 
-            Object.keys(allItems).forEach((category) => {
+            for (const category in allItems) {
                 listText += `${category.charAt(0).toUpperCase() + category.slice(1)}:\n`;
                 allItems[category].forEach(item => {
                     listText += `- ${item}\n`;
                 });
                 listText += "\n";
-            });
+            }
 
             const url = `https://wa.me/?text=${encodeURIComponent(listText)}`;
             window.open(url, "_blank");
