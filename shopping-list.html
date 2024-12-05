@@ -107,7 +107,7 @@
             </h3>
             <ul id="groceryList"></ul>
             <div class="add-item">
-                <input type="text" id="groceryInput" placeholder="Add grocery items (one per line)">
+                <input type="text" id="groceryInput" placeholder="Add grocery items">
             </div>
         </div>
         <div id="household">
@@ -117,7 +117,7 @@
             </h3>
             <ul id="householdList"></ul>
             <div class="add-item">
-                <input type="text" id="householdInput" placeholder="Add household items (one per line)">
+                <input type="text" id="householdInput" placeholder="Add household items">
             </div>
         </div>
         <div id="personal">
@@ -127,7 +127,7 @@
             </h3>
             <ul id="personalList"></ul>
             <div class="add-item">
-                <input type="text" id="personalInput" placeholder="Add personal shopping items (one per line)">
+                <input type="text" id="personalInput" placeholder="Add personal shopping items">
             </div>
         </div>
         <div class="buttons-container">
@@ -137,29 +137,17 @@
     </div>
 
     <script>
-        // Add item when pressing Enter key
-        document.addEventListener("keydown", function (event) {
-            if (event.key === "Enter") {
-                const focusedInput = document.activeElement;
-                if (focusedInput && focusedInput.tagName === "INPUT") {
-                    const category = focusedInput.id.replace("Input", "");
-                    addItemsFromInput(category);
-                }
-            }
-        });
-
-        // Add items from the input field (allow for line breaks and multiple items)
+        // Add items from the input field (allow for comma separation or new line)
         function addItemsFromInput(category) {
             const input = document.getElementById(`${category}Input`);
             const list = document.getElementById(`${category}List`);
 
             if (input.value.trim() === "") {
-                alert("Please enter at least one item.");
                 return;
             }
 
-            // Split input by line breaks and add each item to the list
-            const items = input.value.split("\n").map(item => item.trim()).filter(item => item !== "");
+            // Split input by commas or line breaks and add each item to the list
+            const items = input.value.split(/[\n,]+/).map(item => item.trim()).filter(item => item !== "");
 
             items.forEach(item => {
                 const li = document.createElement("li");
@@ -191,7 +179,7 @@
             return categories.some(category => document.getElementById(`${category}List`).children.length > 0);
         }
 
-        // Get all items from the categories (even if entered in one line)
+        // Get all items from the categories
         function getCategoryItems() {
             const categories = ["grocery", "household", "personal"];
             const allItems = {};
@@ -213,13 +201,13 @@
 
         // Download the list as a PDF
         function downloadAsPDF() {
-            if (!hasItems()) {
-                alert("Please add at least one item to any category.");
+            if (!isDateSelected()) {
+                alert("Please select a date.");
                 return;
             }
 
-            if (!isDateSelected()) {
-                alert("Please select a date.");
+            if (!hasItems()) {
+                alert("Please add at least one item to any category.");
                 return;
             }
 
@@ -260,13 +248,13 @@
 
         // Share the list via WhatsApp
         function shareList() {
-            if (!hasItems()) {
-                alert("Please add at least one item to any category.");
+            if (!isDateSelected()) {
+                alert("Please select a date.");
                 return;
             }
 
-            if (!isDateSelected()) {
-                alert("Please select a date.");
+            if (!hasItems()) {
+                alert("Please add at least one item to any category.");
                 return;
             }
 
@@ -287,6 +275,11 @@
             const url = `https://wa.me/?text=${encodeURIComponent(listText)}`;
             window.open(url, "_blank");
         }
+
+        // Event listeners for pressing enter in input fields
+        document.getElementById("groceryInput").addEventListener("input", () => addItemsFromInput('grocery'));
+        document.getElementById("householdInput").addEventListener("input", () => addItemsFromInput('household'));
+        document.getElementById("personalInput").addEventListener("input", () => addItemsFromInput('personal'));
     </script>
 </body>
 </html>
