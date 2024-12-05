@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping List Organizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #0078D7;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        .category {
+            margin-bottom: 20px;
+        }
+        .category h3 {
+            background: #0078D7;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .category ul {
+            list-style: none;
+            padding: 0;
+        }
+        .category ul li {
+            padding: 8px 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .category ul li button {
+            background: #d9534f;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .category ul li button:hover {
+            background: #c9302c;
+        }
+        .add-item {
+            display: flex;
+            margin-top: 10px;
+        }
+        .add-item input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .add-item button {
+            margin-left: 10px;
+            background: #0078D7;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-item button:hover {
+            background: #005bb5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Shopping List Organizer</h1>
+    </header>
+    <div class="container">
+        <div class="category" id="grocery">
+            <h3>Grocery Items</h3>
+            <ul id="groceryList"></ul>
+            <div class="add-item">
+                <input type="text" id="groceryInput" placeholder="Add grocery item">
+                <button onclick="addItem('grocery')">Add</button>
+            </div>
+        </div>
+        <div class="category" id="household">
+            <h3>Household Items</h3>
+            <ul id="householdList"></ul>
+            <div class="add-item">
+                <input type="text" id="householdInput" placeholder="Add household item">
+                <button onclick="addItem('household')">Add</button>
+            </div>
+        </div>
+        <div class="category" id="personal">
+            <h3>Personal Shopping</h3>
+            <ul id="personalList"></ul>
+            <div class="add-item">
+                <input type="text" id="personalInput" placeholder="Add personal shopping item">
+                <button onclick="addItem('personal')">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addItem(category) {
+            const input = document.getElementById(`${category}Input`);
+            const list = document.getElementById(`${category}List`);
+
+            if (input.value.trim() === "") {
+                alert("Please enter an item.");
+                return;
+            }
+
+            const li = document.createElement("li");
+            li.innerHTML = `
+                ${input.value} 
+                <button onclick="removeItem(this)">Remove</button>
+            `;
+
+            list.appendChild(li);
+            input.value = ""; // Clear the input field
+        }
+
+        function removeItem(button) {
+            const li = button.parentElement;
+            li.remove();
+        }
+    </script>
+</body>
+</html>
