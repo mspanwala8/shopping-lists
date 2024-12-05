@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping List Organizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -30,23 +31,34 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        h2 {
-            color: #333;
-        }
-        .category {
+        .buttons-container {
+            text-align: center;
             margin-bottom: 20px;
         }
-        .category h3 {
+        .buttons-container button {
+            margin: 5px;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #0078D7;
+            color: white;
+        }
+        .buttons-container button:hover {
+            background: #005bb5;
+        }
+        h3 {
             background: #0078D7;
             color: white;
             padding: 10px;
             border-radius: 4px;
         }
-        .category ul {
+        ul {
             list-style: none;
             padding: 0;
         }
-        .category ul li {
+        ul li {
             padding: 8px 10px;
             margin: 5px 0;
             background: #f9f9f9;
@@ -54,7 +66,7 @@
             display: flex;
             justify-content: space-between;
         }
-        .category ul li button {
+        ul li button {
             background: #d9534f;
             color: white;
             border: none;
@@ -62,10 +74,10 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        .category ul li button:hover {
+        ul li button:hover {
             background: #c9302c;
         }
-        .add-item, .remove-all {
+        .add-item {
             display: flex;
             margin-top: 10px;
         }
@@ -74,18 +86,6 @@
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
-        }
-        .add-item button, .remove-all button {
-            margin-left: 10px;
-            background: #0078D7;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .add-item button:hover, .remove-all button:hover {
-            background: #005bb5;
         }
     </style>
 </head>
@@ -98,42 +98,45 @@
         </div>
     </header>
     <div class="container">
-        <div class="category" id="grocery">
+        <div id="grocery">
             <h3>Grocery Items</h3>
             <ul id="groceryList"></ul>
             <div class="add-item">
                 <input type="text" id="groceryInput" placeholder="Add grocery item">
-                <button onclick="addItem('grocery')">Add</button>
-            </div>
-            <div class="remove-all">
-                <button onclick="removeAll('grocery')">Remove All</button>
             </div>
         </div>
-        <div class="category" id="household">
+        <div id="household">
             <h3>Household Items</h3>
             <ul id="householdList"></ul>
             <div class="add-item">
                 <input type="text" id="householdInput" placeholder="Add household item">
-                <button onclick="addItem('household')">Add</button>
-            </div>
-            <div class="remove-all">
-                <button onclick="removeAll('household')">Remove All</button>
             </div>
         </div>
-        <div class="category" id="personal">
+        <div id="personal">
             <h3>Personal Shopping</h3>
             <ul id="personalList"></ul>
             <div class="add-item">
                 <input type="text" id="personalInput" placeholder="Add personal shopping item">
-                <button onclick="addItem('personal')">Add</button>
             </div>
-            <div class="remove-all">
-                <button onclick="removeAll('personal')">Remove All</button>
-            </div>
+        </div>
+        <div class="buttons-container">
+            <button onclick="downloadAsPDF()">Download as PDF</button>
+            <button onclick="shareList()">Share List</button>
         </div>
     </div>
 
     <script>
+        // Add item when pressing Enter key
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                const focusedInput = document.activeElement;
+                if (focusedInput && focusedInput.tagName === "INPUT") {
+                    const category = focusedInput.id.replace("Input", "");
+                    addItem(category);
+                }
+            }
+        });
+
         // Add item to the list
         function addItem(category) {
             const input = document.getElementById(`${category}Input`);
@@ -160,11 +163,57 @@
             li.remove();
         }
 
-        // Remove all items from the list of a category
-        function removeAll(category) {
-            const list = document.getElementById(`${category}List`);
-            while (list.firstChild) {
-                list.removeChild(list.firstChild);
+        // Download the list as a PDF
+        function downloadAsPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const selectedDate = document.getElementById("calendar").value || "No date selected";
+
+            doc.setFontSize(18);
+            doc.text("Shopping List", 10, 10);
+            doc.setFontSize(12);
+            doc.text(`Date: ${selectedDate}`, 10, 20);
+
+            ["grocery", "household", "personal"].forEach((category, index) => {
+                const list = document.getElementById(`${category}List`);
+                const title = category.charAt(0).toUpperCase() + category.slice(1);
+                doc.setFontSize(14);
+                doc.text(`${title}:`, 10, 30 + index * 40);
+
+                Array.from(list.children).forEach((li, i) => {
+                    doc.text(`- ${li.innerText.replace("Remove", "").trim()}`, 20, 40 + index * 40 + i * 10);
+                });
+            });
+
+            doc.save("shopping-list.pdf");
+        }
+
+        // Share the list via email, WhatsApp, or text
+        function shareList() {
+            const categories = ["grocery", "household", "personal"];
+            let listText = "Shopping List:\n";
+            const selectedDate = document.getElementById("calendar").value || "No date selected";
+
+            listText += `Date: ${selectedDate}\n\n`;
+
+            categories.forEach((category) => {
+                const list = document.getElementById(`${category}List`);
+                listText += `${category.charAt(0).toUpperCase() + category.slice(1)}:\n`;
+                Array.from(list.children).forEach((li) => {
+                    listText += `- ${li.innerText.replace("Remove", "").trim()}\n`;
+                });
+                listText += "\n";
+            });
+
+            const shareText = encodeURIComponent(listText);
+            const whatsappURL = `https://wa.me/?text=${shareText}`;
+            const mailtoURL = `mailto:?subject=Shopping List&body=${shareText}`;
+
+            if (confirm("Do you want to share via WhatsApp?")) {
+                window.open(whatsappURL, "_blank");
+            } else {
+                window.open(mailtoURL, "_self");
             }
         }
     </script>
