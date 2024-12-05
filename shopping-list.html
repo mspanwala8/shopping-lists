@@ -107,7 +107,7 @@
             </h3>
             <ul id="groceryList"></ul>
             <div class="add-item">
-                <input type="text" id="groceryInput" placeholder="Add grocery items">
+                <input type="text" id="groceryInput" placeholder="Add grocery items (press Enter for each item)">
             </div>
         </div>
         <div id="household">
@@ -117,7 +117,7 @@
             </h3>
             <ul id="householdList"></ul>
             <div class="add-item">
-                <input type="text" id="householdInput" placeholder="Add household items">
+                <input type="text" id="householdInput" placeholder="Add household items (press Enter for each item)">
             </div>
         </div>
         <div id="personal">
@@ -127,7 +127,7 @@
             </h3>
             <ul id="personalList"></ul>
             <div class="add-item">
-                <input type="text" id="personalInput" placeholder="Add personal shopping items">
+                <input type="text" id="personalInput" placeholder="Add personal shopping items (press Enter for each item)">
             </div>
         </div>
         <div class="buttons-container">
@@ -137,37 +137,34 @@
     </div>
 
     <script>
-        // Add items from the input field (allow for comma separation or new line)
-        function addItemsFromInput(category) {
+        // Function to handle adding items on Enter key press
+        function handleEnterPress(event, category) {
             const input = document.getElementById(`${category}Input`);
             const list = document.getElementById(`${category}List`);
 
-            if (input.value.trim() === "") {
-                return;
+            if (event.key === 'Enter' && input.value.trim() !== "") {
+                const items = input.value.split('\n').map(item => item.trim()).filter(item => item !== "");
+                
+                items.forEach(item => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `
+                        ${item} 
+                        <button onclick="removeItem(this)">Remove</button>
+                    `;
+                    list.appendChild(li);
+                });
+                
+                input.value = ""; // Clear input field after adding items
             }
-
-            // Split input by commas or line breaks and add each item to the list
-            const items = input.value.split(/[\n,]+/).map(item => item.trim()).filter(item => item !== "");
-
-            items.forEach(item => {
-                const li = document.createElement("li");
-                li.innerHTML = `
-                    ${item} 
-                    <button onclick="removeItem(this)">Remove</button>
-                `;
-                list.appendChild(li);
-            });
-
-            input.value = ""; // Clear the input field
         }
 
-        // Remove a specific item from the list
+        // Function to remove a specific item from the list
         function removeItem(button) {
             const li = button.parentElement;
             li.remove();
         }
 
-        // Remove all items in a category
+        // Function to remove all items in a category
         function removeAll(listId) {
             const list = document.getElementById(listId);
             list.innerHTML = ""; // Clear all items
@@ -272,14 +269,15 @@
                 listText += "\n";
             }
 
-            const url = `https://wa.me/?text=${encodeURIComponent(listText)}`;
-            window.open(url, "_blank");
+            const encodedText = encodeURIComponent(listText);
+            const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+            window.open(whatsappUrl, '_blank');
         }
 
-        // Event listeners for pressing enter in input fields
-        document.getElementById("groceryInput").addEventListener("input", () => addItemsFromInput('grocery'));
-        document.getElementById("householdInput").addEventListener("input", () => addItemsFromInput('household'));
-        document.getElementById("personalInput").addEventListener("input", () => addItemsFromInput('personal'));
+        // Add event listeners for the input fields
+        document.getElementById("groceryInput").addEventListener("keydown", (event) => handleEnterPress(event, "grocery"));
+        document.getElementById("householdInput").addEventListener("keydown", (event) => handleEnterPress(event, "household"));
+        document.getElementById("personalInput").addEventListener("keydown", (event) => handleEnterPress(event, "personal"));
     </script>
 </body>
 </html>
