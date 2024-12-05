@@ -53,6 +53,8 @@
             color: white;
             padding: 10px;
             border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
         }
         ul {
             list-style: none;
@@ -99,21 +101,30 @@
     </header>
     <div class="container">
         <div id="grocery">
-            <h3>Grocery Items</h3>
+            <h3>
+                Grocery Items 
+                <button onclick="removeAll('groceryList')">Remove All</button>
+            </h3>
             <ul id="groceryList"></ul>
             <div class="add-item">
                 <input type="text" id="groceryInput" placeholder="Add grocery item">
             </div>
         </div>
         <div id="household">
-            <h3>Household Items</h3>
+            <h3>
+                Household Items 
+                <button onclick="removeAll('householdList')">Remove All</button>
+            </h3>
             <ul id="householdList"></ul>
             <div class="add-item">
                 <input type="text" id="householdInput" placeholder="Add household item">
             </div>
         </div>
         <div id="personal">
-            <h3>Personal Shopping</h3>
+            <h3>
+                Personal Shopping 
+                <button onclick="removeAll('personalList')">Remove All</button>
+            </h3>
             <ul id="personalList"></ul>
             <div class="add-item">
                 <input type="text" id="personalInput" placeholder="Add personal shopping item">
@@ -161,6 +172,12 @@
         function removeItem(button) {
             const li = button.parentElement;
             li.remove();
+        }
+
+        // Remove all items in a category
+        function removeAll(listId) {
+            const list = document.getElementById(listId);
+            list.innerHTML = ""; // Clear all items
         }
 
         // Download the list as a PDF
