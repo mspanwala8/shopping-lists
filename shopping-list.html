@@ -7,266 +7,200 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
             margin: 0;
             padding: 0;
         }
-        header {
-            background: #0078D7;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-        }
-        .date-container {
-            margin: 10px 0;
-            font-size: 18px;
-            text-align: center;
-        }
         .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
-        .buttons-container {
+        h1 {
             text-align: center;
+            color: #333;
+            font-size: 28px;
             margin-bottom: 20px;
         }
-        .buttons-container button {
-            margin: 5px;
-            padding: 10px 15px;
+        label {
             font-size: 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            background: #0078D7;
-            color: white;
+            color: #555;
+            display: block;
+            margin-bottom: 10px;
         }
-        .buttons-container button:hover {
-            background: #005bb5;
-        }
-        h3 {
-            background: #0078D7;
-            color: white;
-            padding: 10px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        ul li {
-            padding: 8px 10px;
-            margin: 5px 0;
-            background: #f9f9f9;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-        }
-        ul li button {
-            background: #d9534f;
-            color: white;
-            border: none;
-            padding: 5px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        ul li button:hover {
-            background: #c9302c;
-        }
-        .add-item {
-            display: flex;
-            margin-top: 10px;
-        }
-        .add-item input {
-            flex: 1;
-            padding: 8px;
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            border-radius: 5px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+        }
+        .category {
+            margin-bottom: 30px;
+        }
+        .category h3 {
+            font-size: 20px;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        .category textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            min-height: 120px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        .category textarea:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        .category button {
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .category button:hover {
+            background-color: #d32f2f;
+        }
+        .buttons {
+            text-align: center;
+        }
+        .buttons button {
+            padding: 12px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 15px 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .buttons button:hover {
+            background-color: #45a049;
+        }
+        .buttons button:active {
+            background-color: #388e3c;
+        }
+        .whatsapp-button {
+            background-color: #25d366;
+            border-radius: 50%;
+            padding: 15px;
+            font-size: 20px;
+        }
+        .whatsapp-button:hover {
+            background-color: #128c7e;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Shopping List Organizer</h1>
-        <div class="date-container">
-            <label for="calendar">Select Date:</label>
-            <input type="date" id="calendar">
-        </div>
-    </header>
     <div class="container">
-        <div id="grocery">
-            <h3>
-                Grocery Items 
-                <button onclick="removeAll('groceryList')">Remove All</button>
-            </h3>
-            <ul id="groceryList"></ul>
-            <div class="add-item">
-                <input type="text" id="groceryInput" placeholder="Add grocery items (press Enter for each item)">
-            </div>
+        <h1>Shopping List Organizer</h1>
+        
+        <label for="calendar">Select Date: </label>
+        <input type="date" id="calendar">
+        
+        <div class="category">
+            <h3>Grocery Items</h3>
+            <textarea id="groceryInput" placeholder="Enter grocery items, press Enter to add each item"></textarea>
+            <button onclick="removeAll('grocery')">Remove All</button>
         </div>
-        <div id="household">
-            <h3>
-                Household Items 
-                <button onclick="removeAll('householdList')">Remove All</button>
-            </h3>
-            <ul id="householdList"></ul>
-            <div class="add-item">
-                <input type="text" id="householdInput" placeholder="Add household items (press Enter for each item)">
-            </div>
+        
+        <div class="category">
+            <h3>Household Items</h3>
+            <textarea id="householdInput" placeholder="Enter household items, press Enter to add each item"></textarea>
+            <button onclick="removeAll('household')">Remove All</button>
         </div>
-        <div id="personal">
-            <h3>
-                Personal Shopping 
-                <button onclick="removeAll('personalList')">Remove All</button>
-            </h3>
-            <ul id="personalList"></ul>
-            <div class="add-item">
-                <input type="text" id="personalInput" placeholder="Add personal shopping items (press Enter for each item)">
-            </div>
+        
+        <div class="category">
+            <h3>Personal Shopping</h3>
+            <textarea id="personalInput" placeholder="Enter personal items, press Enter to add each item"></textarea>
+            <button onclick="removeAll('personal')">Remove All</button>
         </div>
-        <div class="buttons-container">
-            <button onclick="downloadAsPDF()">Download as PDF</button>
-            <button onclick="shareList()">Share via WhatsApp</button>
+        
+        <div class="buttons">
+            <button onclick="downloadPDF()">Download as PDF</button>
+            <button onclick="shareOnWhatsApp()">Share on WhatsApp</button>
         </div>
     </div>
 
     <script>
-        // Function to handle adding items on Enter key press
-        function handleEnterPress(event, category) {
-            const input = document.getElementById(`${category}Input`);
-            const list = document.getElementById(`${category}List`);
+        let allItems = {
+            grocery: [],
+            household: [],
+            personal: []
+        };
 
-            if (event.key === 'Enter' && input.value.trim() !== "") {
-                const items = input.value.split('\n').map(item => item.trim()).filter(item => item !== "");
-                
-                items.forEach(item => {
-                    const li = document.createElement("li");
-                    li.innerHTML = `
-                        ${item} 
-                        <button onclick="removeItem(this)">Remove</button>
-                    `;
-                    list.appendChild(li);
-                });
-                
-                input.value = ""; // Clear input field after adding items
-            }
+        // Function to process the input as user types or presses Enter
+        function processInput(category) {
+            const inputField = document.getElementById(category + "Input");
+            const items = inputField.value.trim().split(/\n/); // Split input by new lines
+            allItems[category] = items.filter(item => item.trim() !== ''); // Filter out empty entries
         }
 
-        // Function to remove a specific item from the list
-        function removeItem(button) {
-            const li = button.parentElement;
-            li.remove();
+        // Remove all items from a category
+        function removeAll(category) {
+            allItems[category] = [];
+            document.getElementById(category + "Input").value = '';
         }
 
-        // Function to remove all items in a category
-        function removeAll(listId) {
-            const list = document.getElementById(listId);
-            list.innerHTML = ""; // Clear all items
-        }
+        // Download list as PDF
+        function downloadPDF() {
+            const selectedDate = document.getElementById("calendar").value;
+            const dateText = `Date: ${selectedDate}`;
+            const itemsText = Object.keys(allItems)
+                .map(category => {
+                    const items = allItems[category].map(item => `- ${item}`).join("\n");
+                    return `${category.charAt(0).toUpperCase() + category.slice(1)}:\n${items}`;
+                })
+                .join("\n\n");
 
-        // Check if at least one item exists in any category
-        function hasItems() {
-            const categories = ["grocery", "household", "personal"];
-            return categories.some(category => document.getElementById(`${category}List`).children.length > 0);
-        }
-
-        // Get all items from the categories
-        function getCategoryItems() {
-            const categories = ["grocery", "household", "personal"];
-            const allItems = {};
-
-            categories.forEach(category => {
-                const list = document.getElementById(`${category}List`);
-                const items = Array.from(list.children).map(li => li.innerText.replace("Remove", "").trim());
-                allItems[category] = items;
-            });
-
-            return allItems;
-        }
-
-        // Check if the date is selected
-        function isDateSelected() {
-            const date = document.getElementById("calendar").value;
-            return date !== "";
-        }
-
-        // Download the list as a PDF
-        function downloadAsPDF() {
-            if (!isDateSelected()) {
-                alert("Please select a date.");
-                return;
-            }
-
-            if (!hasItems()) {
+            // Ensure at least one category has items before downloading
+            if (Object.values(allItems).every(items => items.length === 0)) {
                 alert("Please add at least one item to any category.");
                 return;
             }
 
             const { jsPDF } = window.jspdf;
+
+            // Create the filename with the selected date appended
+            const filename = `shopping_list_${selectedDate.replace(/-/g, '')}.pdf`;
+
             const doc = new jsPDF();
-
-            const selectedDate = document.getElementById("calendar").value;
-
             doc.setFontSize(18);
-            doc.text("Shopping List", 10, 10);
-            doc.setFontSize(12);
-            doc.text(`Date: ${selectedDate}`, 10, 20);
-
-            const allItems = getCategoryItems();
-
-            // Function to add list content to PDF
-            function addCategoryToPDF(category, yPosition) {
-                const items = allItems[category];
-                const title = category.charAt(0).toUpperCase() + category.slice(1);
-                doc.setFontSize(14);
-                doc.text(`${title}:`, 10, yPosition);
-                yPosition += 10; // Move the next items down
-
-                items.forEach((item, i) => {
-                    doc.text(`- ${item}`, 20, yPosition + i * 10);
-                });
-
-                return yPosition + items.length * 10 + 10; // Return updated Y position
-            }
-
-            let yPosition = 30; // Start Y position for PDF content
-            yPosition = addCategoryToPDF("grocery", yPosition);
-            yPosition = addCategoryToPDF("household", yPosition);
-            yPosition = addCategoryToPDF("personal", yPosition);
-
-            doc.save("shopping-list.pdf");
+            doc.text(dateText, 10, 10);
+            doc.text(itemsText, 10, 20);
+            doc.save(filename);
         }
 
-        // Share the list via WhatsApp
-        function shareList() {
-            if (!isDateSelected()) {
-                alert("Please select a date.");
-                return;
-            }
+        // Share list via WhatsApp
+        function shareOnWhatsApp() {
+            const selectedDate = document.getElementById("calendar").value;
+            const dateText = `Date: ${selectedDate}`;
+            let listText = `Shopping List:\n\n${dateText}\n\n`;
 
-            if (!hasItems()) {
+            Object.keys(allItems).forEach(category => {
+                const items = allItems[category].map(item => `- ${item}`).join("\n");
+                listText += `${category.charAt(0).toUpperCase() + category.slice(1)}:\n${items}\n\n`;
+            });
+
+            // Ensure at least one category has items before sharing
+            if (Object.values(allItems).every(items => items.length === 0)) {
                 alert("Please add at least one item to any category.");
                 return;
-            }
-
-            const allItems = getCategoryItems();
-            let listText = `Shopping List\n\n`;
-
-            const selectedDate = document.getElementById("calendar").value;
-            listText += `Date: ${selectedDate}\n\n`;
-
-            for (const category in allItems) {
-                listText += `${category.charAt(0).toUpperCase() + category.slice(1)}:\n`;
-                allItems[category].forEach(item => {
-                    listText += `- ${item}\n`;
-                });
-                listText += "\n";
             }
 
             const encodedText = encodeURIComponent(listText);
@@ -274,10 +208,45 @@
             window.open(whatsappUrl, '_blank');
         }
 
-        // Add event listeners for the input fields
-        document.getElementById("groceryInput").addEventListener("keydown", (event) => handleEnterPress(event, "grocery"));
-        document.getElementById("householdInput").addEventListener("keydown", (event) => handleEnterPress(event, "household"));
-        document.getElementById("personalInput").addEventListener("keydown", (event) => handleEnterPress(event, "personal"));
+        // Add event listeners for 'Enter' key to add items
+        document.getElementById("groceryInput").addEventListener("input", function() {
+            processInput('grocery');
+        });
+
+        document.getElementById("householdInput").addEventListener("input", function() {
+            processInput('household');
+        });
+
+        document.getElementById("personalInput").addEventListener("input", function() {
+            processInput('personal');
+        });
+
+        // Allow pressing Enter to add new lines
+        document.getElementById("groceryInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                processInput('grocery');
+            }
+        });
+
+        document.getElementById("householdInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                processInput('household');
+            }
+        });
+
+        document.getElementById("personalInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                processInput('personal');
+            }
+        });
+
+        // Set min date to today to disable past dates
+        const today = new Date();
+        const currentDate = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+
+        document.getElementById("calendar").setAttribute("min", currentDate);
+        document.getElementById("calendar").value = currentDate;
+
     </script>
 </body>
 </html>
